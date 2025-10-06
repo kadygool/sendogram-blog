@@ -1,0 +1,60 @@
+/* Кастомные стили для Starlight */
+
+:root {
+  --sl-color-accent-low: #4f46e5;
+  --sl-color-accent: #4f46e5;
+  --sl-color-accent-high: #818cf8;
+  --sl-color-white: #fff;
+  --sl-color-gray-1: #eee;
+  --sl-color-gray-2: #c2c2c2;
+  --sl-color-gray-3: #8b8b8b;
+  --sl-color-gray-4: #585858;
+  --sl-color-gray-5: #383838;
+  --sl-color-gray-6: #272727;
+  --sl-color-black: #181818;
+}
+
+/* Улучшенная типографика */
+.sl-markdown-content {
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+
+/* Красивые code blocks */
+.sl-markdown-content pre {
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+}
+
+/* Улучшенные таблицы */
+.sl-markdown-content table {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.sl-markdown-content th {
+  background: var(--sl-color-gray-5);
+  font-weight: 600;
+}
+
+.sl-markdown-content tr:nth-child(even) {
+  background: var(--sl-color-gray-6);
+}
+
+/* Красивые списки с чекбоксами */
+.sl-markdown-content input[type="checkbox"] {
+  margin-right: 0.5rem;
+  transform: scale(1.2);
+}
+
+/* Улучшенные ссылки */
+.sl-markdown-content a {
+  color: var(--sl-color-accent-high);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.sl-markdown-content a:hover {
+  border-bottom-color: var(--sl-color-accent-high);
+}

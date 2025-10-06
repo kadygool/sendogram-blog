@@ -1,0 +1,35 @@
+sendogram-blog/
+├── CONTENT_GUIDE.md
+├── DEPLOYMENT.md
+├── Dockerfile
+├── PROJECT_STRUCTURE.txt
+├── README.md
+├── SETUP_INSTRUCTIONS.md
+├── astro.config.mjs
+├── content
+│   ├── blog
+│   └── kb
+├── docker-compose.yml
+├── netlify.toml
+├── nginx.conf
+├── package.json
+├── public
+│   ├── admin
+│   ├── og
+│   ├── robots.txt
+│   └── uploads
+├── robots.txt
+├── scripts
+│   ├── build-og.ts
+│   └── make-feeds.mjs
+├── site.config.ts
+├── src
+│   ├── components
+│   ├── content
+│   ├── layouts
+│   ├── pages
+│   ├── styles
+│   └── utils
+└── tsconfig.json
+
+16 directories, 17 files

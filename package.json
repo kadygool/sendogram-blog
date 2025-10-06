@@ -1,0 +1,33 @@
+{
+  "name": "sendogram-blog",
+  "version": "1.0.0",
+  "description": "Блог и база знаний Sendogram с Decap CMS",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "node scripts/build-og.mjs && astro build && node scripts/make-feeds.mjs",
+    "preview": "astro preview",
+    "lint": "eslint .",
+    "pagefind": "pagefind --site dist"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^2.0.3",
+    "@astrojs/react": "^3.0.9",
+    "@astrojs/sitemap": "^3.0.4",
+    "@astrojs/starlight": "^0.17.1",
+    "astro": "^4.1.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "sharp": "^0.33.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
+    "canvas": "^2.11.2",
+    "eslint": "^8.56.0",
+    "pagefind": "^1.0.4",
+    "rss": "^1.2.2",
+    "typescript": "^5.3.3"
+  }
+}

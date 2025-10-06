@@ -1,0 +1,27 @@
+---
+/**
+ * Кастомный компонент Head для Starlight
+ * Добавляет дополнительные мета-теги и аналитику
+ */
+import type { Props } from '@astrojs/starlight/props';
+import { SITE_CONFIG } from '../../site.config';
+
+const { entry } = Astro.props;
+---
+
+<!-- Plausible Analytics -->
+{SITE_CONFIG.isProd && (
+  <script 
+    defer 
+    data-domain={SITE_CONFIG.plausibleDomain} 
+    src="https://plausible.io/js/script.js"
+  ></script>
+)}
+
+<!-- Additional meta tags for better SEO -->
+<meta name="author" content={SITE_CONFIG.author}>
+
+<!-- Prevent indexing on staging -->
+{SITE_CONFIG.isStaging && (
+  <meta name="robots" content="noindex, nofollow">
+)}

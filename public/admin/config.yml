@@ -1,0 +1,65 @@
+backend:
+  name: github
+  repo: sendogram/sendogram-blog
+  branch: main
+  base_url: https://sendogram.online
+  auth_endpoint: /api/cms/auth
+
+publish_mode: editorial_workflow
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+collections:
+  - name: "blog"
+    label: "Блог"
+    folder: "content/blog"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - {label: "Заголовок", name: "title", widget: "string", required: true}
+      - {label: "Описание (SEO)", name: "description", widget: "string", required: true, pattern: ['^.{1,160}$', "Максимум 160 символов"]}
+      - {label: "Дата публикации", name: "pubDate", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false}
+      - {label: "Дата обновления", name: "updatedAt", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false, required: false}
+      - {label: "Автор", name: "author", widget: "string", default: "Команда Sendogram"}
+      - {label: "Теги", name: "tags", widget: "list", default: ["telegram"]}
+      - {label: "Изображение для соцсетей", name: "image", widget: "image", required: false, hint: "OG-картинка"}
+      - {label: "Canonical URL", name: "canonical", widget: "string", required: false}
+      - {label: "Тип схемы", name: "schemaType", widget: "select", options: ["Article", "NewsArticle"], default: "Article"}
+      - {label: "Черновик", name: "draft", widget: "boolean", default: false}
+      - {label: "Slug (URL)", name: "slug", widget: "string", required: false, hint: "Оставьте пустым для автогенерации"}
+      - label: "Похожие материалы"
+        name: "related"
+        widget: "list"
+        required: false
+        field: {label: "URL", name: "url", widget: "string"}
+      - {label: "Содержимое", name: "body", widget: "markdown"}
+
+  - name: "kb"
+    label: "База знаний"
+    folder: "content/kb"
+    create: true
+    slug: "{{slug}}"
+    nested:
+      depth: 3
+    fields:
+      - {label: "Заголовок", name: "title", widget: "string", required: true}
+      - {label: "Описание (SEO)", name: "description", widget: "string", required: true, pattern: ['^.{1,160}$', "Максимум 160 символов"]}
+      - {label: "Дата обновления", name: "updatedAt", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false}
+      - {label: "Тип схемы", name: "schemaType", widget: "select", options: ["FAQPage", "TechArticle", "HowTo"], default: "TechArticle"}
+      - {label: "Черновик", name: "draft", widget: "boolean", default: false}
+      - label: "FAQ (если schemaType = FAQPage)"
+        name: "faqs"
+        widget: "list"
+        required: false
+        fields:
+          - {label: "Вопрос", name: "question", widget: "string"}
+          - {label: "Ответ", name: "answer", widget: "text"}
+      - label: "Хлебные крошки"
+        name: "breadcrumbs"
+        widget: "list"
+        required: false
+        fields:
+          - {label: "Название", name: "name", widget: "string"}
+          - {label: "URL", name: "url", widget: "string"}
+      - {label: "Содержимое", name: "body", widget: "markdown"}

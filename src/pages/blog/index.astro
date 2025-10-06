@@ -1,0 +1,184 @@
+---
+import { getCollection } from 'astro:content';
+import { SITE_CONFIG } from '../../../site.config';
+
+const allBlogPosts = await getCollection('blog', ({ data }) => {
+  return !data.draft;
+});
+
+const sortedPosts = allBlogPosts.sort((a, b) => 
+  new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
+);
+---
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Блог | Sendogram</title>
+  <meta name="description" content="Блог о Telegram-маркетинге, автоматизации рассылок и безопасной работе с ботами">
+  <link rel="canonical" href={`${SITE_CONFIG.siteUrl}/blog`}>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --sl-color-white: #fff;
+      --sl-color-gray-2: #c2c2c2;
+      --sl-color-gray-3: #8b8b8b;
+      --sl-color-gray-5: #383838;
+      --sl-color-gray-6: #272727;
+      --sl-color-black: #181818;
+      --sl-color-accent: #4f46e5;
+      --sl-color-text-accent: #818cf8;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--sl-color-black);
+      color: var(--sl-color-white);
+      margin: 0;
+      padding: 0;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+    
+    header {
+      padding: 1.5rem 0;
+      border-bottom: 1px solid var(--sl-color-gray-5);
+    }
+    
+    header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--sl-color-white);
+      text-decoration: none;
+    }
+    
+    nav {
+      display: flex;
+      gap: 1.5rem;
+    }
+    
+    nav a {
+      color: var(--sl-color-gray-2);
+      text-decoration: none;
+    }
+    
+    nav a:hover {
+      color: var(--sl-color-white);
+    }
+    
+    .hero {
+      padding: 3rem 0;
+      text-align: center;
+    }
+    
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .posts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 2rem;
+      padding: 2rem 0;
+    }
+    
+    .post-card {
+      background: var(--sl-color-gray-6);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      transition: transform 0.2s;
+    }
+    
+    .post-card:hover {
+      transform: translateY(-4px);
+    }
+    
+    .post-card h2 {
+      font-size: 1.375rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .post-card h2 a {
+      color: var(--sl-color-white);
+      text-decoration: none;
+    }
+    
+    .post-card h2 a:hover {
+      color: var(--sl-color-text-accent);
+    }
+    
+    .post-meta {
+      color: var(--sl-color-gray-3);
+      font-size: 0.875rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .post-description {
+      color: var(--sl-color-gray-2);
+      margin-bottom: 1rem;
+    }
+    
+    .read-more {
+      color: var(--sl-color-text-accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <a href="/" class="logo">Sendogram</a>
+      <nav>
+        <a href="/blog">Блог</a>
+        <a href="/kb">База знаний</a>
+        <a href={SITE_CONFIG.appUrl}>Войти</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <h1>📝 Блог</h1>
+        <p>Полезные материалы о Telegram-маркетинге</p>
+      </div>
+    </section>
+
+    <section class="container">
+      <div class="posts-grid">
+        {sortedPosts.map(post => (
+          <article class="post-card">
+            <div class="post-meta">
+              {new Date(post.data.pubDate).toLocaleDateString('ru-RU', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </div>
+            <h2>
+              <a href={`/blog/${post.slug}/`}>{post.data.title}</a>
+            </h2>
+            <p class="post-description">{post.data.description}</p>
+            <a href={`/blog/${post.slug}/`} class="read-more">Читать →</a>
+          </article>
+        ))}
+      </div>
+    </section>
+  </main>
+</body>
+</html>

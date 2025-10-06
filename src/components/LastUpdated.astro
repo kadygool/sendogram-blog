@@ -1,0 +1,46 @@
+---
+export interface Props {
+  date: string | Date;
+}
+
+const { date } = Astro.props;
+
+const formatDate = (d: string | Date) => {
+  const dateObj = typeof d === 'string' ? new Date(d) : d;
+  return dateObj.toLocaleDateString('ru-RU', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+};
+
+const isoDate = typeof date === 'string' ? date : date.toISOString().split('T')[0];
+---
+
+<div class="last-updated">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"></circle>
+    <polyline points="12 6 12 12 16 14"></polyline>
+  </svg>
+  <time datetime={isoDate}>
+    Обновлено: {formatDate(date)}
+  </time>
+</div>
+
+<style>
+  .last-updated {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--sl-color-gray-3);
+    margin: 1rem 0;
+    padding: 0.75rem 1rem;
+    background: var(--sl-color-gray-6);
+    border-radius: 0.5rem;
+  }
+  
+  .last-updated svg {
+    flex-shrink: 0;
+  }
+</style>

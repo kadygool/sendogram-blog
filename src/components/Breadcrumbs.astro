@@ -1,0 +1,96 @@
+---
+export interface Props {
+  breadcrumbs?: Array<{ name: string; url: string }>;
+  currentPage?: string;
+}
+
+const { breadcrumbs, currentPage } = Astro.props;
+
+// Генерация хлебных крошек из URL, если не предоставлены
+const generateBreadcrumbs = () => {
+  if (breadcrumbs) return breadcrumbs;
+  
+  const path = Astro.url.pathname;
+  const segments = path.split('/').filter(Boolean);
+  const crumbs = [{ name: 'Главная', url: '/' }];
+  
+  let currentPath = '';
+  segments.forEach((segment, index) => {
+    currentPath += `/${segment}`;
+    const isLast = index === segments.length - 1;
+    if (!isLast) {
+      const name = segment === 'blog' ? 'Блог' : 
+                   segment === 'kb' ? 'База знаний' : 
+                   segment.charAt(0).toUpperCase() + segment.slice(1);
+      crumbs.push({ name, url: currentPath });
+    }
+  });
+  
+  return crumbs;
+};
+
+const crumbs = generateBreadcrumbs();
+---
+
+<nav aria-label="Breadcrumb" class="breadcrumbs">
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+    {crumbs.map((crumb, index) => (
+      <li 
+        itemprop="itemListElement" 
+        itemscope 
+        itemtype="https://schema.org/ListItem"
+      >
+        <a href={crumb.url} itemprop="item">
+          <span itemprop="name">{crumb.name}</span>
+        </a>
+        <meta itemprop="position" content={String(index + 1)} />
+      </li>
+    ))}
+    {currentPage && (
+      <li 
+        itemprop="itemListElement" 
+        itemscope 
+        itemtype="https://schema.org/ListItem"
+        aria-current="page"
+      >
+        <span itemprop="name">{currentPage}</span>
+        <meta itemprop="position" content={String(crumbs.length + 1)} />
+      </li>
+    )}
+  </ol>
+</nav>
+
+<style>
+  .breadcrumbs {
+    margin: 1rem 0;
+    font-size: 0.875rem;
+  }
+  
+  .breadcrumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .breadcrumbs li:not(:last-child)::after {
+    content: '›';
+    margin-left: 0.5rem;
+    color: var(--sl-color-gray-4);
+  }
+  
+  .breadcrumbs a {
+    color: var(--sl-color-text-accent);
+    text-decoration: none;
+  }
+  
+  .breadcrumbs a:hover {
+    text-decoration: underline;
+  }
+  
+  .breadcrumbs li[aria-current="page"] {
+    color: var(--sl-color-gray-3);
+  }
+</style>

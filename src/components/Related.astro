@@ -1,0 +1,196 @@
+---
+import { getCollection } from 'astro:content';
+
+export interface Props {
+  currentSlug: string;
+  tags?: string[];
+  relatedUrls?: string[];
+  maxItems?: number;
+}
+
+const { currentSlug, tags = [], relatedUrls = [], maxItems = 3 } = Astro.props;
+
+// Получаем все посты блога
+const allBlogPosts = await getCollection('blog', ({ data }) => {
+  return !data.draft;
+});
+
+// Получаем все KB страницы
+const allKBPages = await getCollection('kb', ({ data }) => {
+  return !data.draft;
+});
+
+// Функция для подсчета релевантности
+const calculateRelevance = (post: any) => {
+  let score = 0;
+  const postTags = post.data.tags || [];
+  
+  // Совпадение тегов
+  postTags.forEach((tag: string) => {
+    if (tags.includes(tag)) score += 2;
+  });
+  
+  return score;
+};
+
+// Фильтруем и сортируем похожие материалы
+const relatedPosts = [...allBlogPosts, ...allKBPages]
+  .filter(post => post.slug !== currentSlug)
+  .map(post => ({
+    ...post,
+    relevance: calculateRelevance(post)
+  }))
+  .sort((a, b) => b.relevance - a.relevance)
+  .slice(0, maxItems);
+
+// Если указаны конкретные URL, приоритизируем их
+let finalRelated = relatedPosts;
+if (relatedUrls.length > 0) {
+  const specificPosts = [...allBlogPosts, ...allKBPages].filter(post => {
+    const postUrl = `/${post.collection}/${post.slug}`;
+    return relatedUrls.includes(postUrl);
+  });
+  
+  finalRelated = [
+    ...specificPosts,
+    ...relatedPosts.filter(p => !specificPosts.find(sp => sp.slug === p.slug))
+  ].slice(0, maxItems);
+}
+
+if (finalRelated.length === 0) {
+  return null;
+}
+---
+
+<aside class="related-content">
+  <h2>Похожие материалы</h2>
+  <div class="related-grid">
+    {finalRelated.map(post => {
+      const url = `/${post.collection}/${post.slug}/`;
+      const isKB = post.collection === 'kb';
+      
+      return (
+        <article class="related-card">
+          <div class="related-meta">
+            <span class="related-type">{isKB ? 'База знаний' : 'Блог'}</span>
+            {post.data.pubDate && (
+              <time datetime={post.data.pubDate}>
+                {new Date(post.data.pubDate).toLocaleDateString('ru-RU', { 
+                  year: 'numeric', 
+                  month: 'short',
+                  day: 'numeric'
+                })}
+              </time>
+            )}
+          </div>
+          <h3>
+            <a href={url}>{post.data.title}</a>
+          </h3>
+          {post.data.description && (
+            <p class="related-description">{post.data.description}</p>
+          )}
+          <a href={url} class="related-link">
+            Читать →
+          </a>
+        </article>
+      );
+    })}
+  </div>
+</aside>
+
+<style>
+  .related-content {
+    margin: 3rem 0;
+    padding: 2rem;
+    background: var(--sl-color-gray-6);
+    border-radius: 1rem;
+  }
+  
+  .related-content h2 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    color: var(--sl-color-white);
+  }
+  
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .related-card {
+    padding: 1.5rem;
+    background: var(--sl-color-gray-5);
+    border-radius: 0.75rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .related-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+  
+  .related-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-size: 0.75rem;
+    color: var(--sl-color-gray-3);
+  }
+  
+  .related-type {
+    padding: 0.25rem 0.5rem;
+    background: var(--sl-color-accent);
+    color: white;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.625rem;
+  }
+  
+  .related-card h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.125rem;
+    line-height: 1.4;
+  }
+  
+  .related-card h3 a {
+    color: var(--sl-color-white);
+    text-decoration: none;
+  }
+  
+  .related-card h3 a:hover {
+    color: var(--sl-color-text-accent);
+  }
+  
+  .related-description {
+    margin: 0 0 1rem 0;
+    font-size: 0.875rem;
+    color: var(--sl-color-gray-2);
+    line-height: 1.6;
+  }
+  
+  .related-link {
+    display: inline-block;
+    color: var(--sl-color-text-accent);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+  
+  .related-link:hover {
+    text-decoration: underline;
+  }
+  
+  @media (max-width: 768px) {
+    .related-content {
+      padding: 1.5rem;
+    }
+    
+    .related-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,30 @@
+---
+import { getCollection } from 'astro:content';
+import KBPage from '@layouts/KBPage.astro';
+
+export async function getStaticPaths() {
+  const kbEntries = await getCollection('kb', ({ data }) => {
+    return !data.draft;
+  });
+  
+  return kbEntries.map(entry => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+---
+
+<KBPage
+  title={entry.data.title}
+  description={entry.data.description}
+  updatedAt={entry.data.updatedAt}
+  schemaType={entry.data.schemaType}
+  faqs={entry.data.faqs}
+  breadcrumbs={entry.data.breadcrumbs}
+  slug={entry.slug}
+>
+  <Content />
+</KBPage>
