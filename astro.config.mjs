@@ -10,6 +10,7 @@ import { SITE_CONFIG } from './site.config.ts';
 export default defineConfig({
   site: SITE_CONFIG.siteUrl,
   trailingSlash: 'ignore',
+  output: "static",
   
   integrations: [
     expressiveCode({
