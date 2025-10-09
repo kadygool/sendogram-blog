@@ -27,7 +27,7 @@ function parseFrontmatter(content) {
 
 // Чтение всех постов блога
 function getAllBlogPosts() {
-  const blogDir = './content/blog';
+  const blogDir = './src/content/blog';
   const files = readdirSync(blogDir).filter(f => f.endsWith('.md') || f.endsWith('.mdx'));
   
   const posts = files.map(file => {
