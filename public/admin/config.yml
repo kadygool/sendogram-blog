@@ -28,8 +28,6 @@ collections:
       - {label: "Canonical URL", name: "canonical", widget: "string", required: false}
       - {label: "Тип схемы", name: "schemaType", widget: "select", options: ["Article", "NewsArticle"], default: "Article"}
       - {label: "Черновик", name: "draft", widget: "boolean", default: false}
-      - {label: "Slug (URL)", name: "slug", widget: "string", required: false, hint: "Оставьте пустым для автогенерации"}
-      - label: "Похожие материалы"
         name: "related"
         widget: "list"
         required: false

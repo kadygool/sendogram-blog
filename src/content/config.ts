@@ -13,7 +13,6 @@ const blogCollection = defineCollection({
     canonical: z.string().url().optional(),
     schemaType: z.enum(['Article', 'NewsArticle']).default('Article'),
     draft: z.boolean().default(false),
-    slug: z.string().optional(),
     related: z.array(z.string()).default([]),
   }),
 });
