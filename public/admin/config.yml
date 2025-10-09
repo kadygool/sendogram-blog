@@ -13,7 +13,7 @@ public_folder: "/uploads"
 collections:
   - name: "blog"
     label: "Блог"
-    folder: "content/blog"
+    folder: "src/content/blog"
     extension: "mdx"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
@@ -38,7 +38,7 @@ collections:
 
   - name: "kb"
     label: "База знаний"
-    folder: "content/kb"
+    folder: "src/content/kb"
     create: true
     slug: "{{slug}}"
     nested:
