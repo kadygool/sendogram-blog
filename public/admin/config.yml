@@ -1,6 +1,6 @@
 backend:
   name: github
-  repo: sendogram/sendogram-blog
+  repo: kadygool/sendogram-blog
   branch: main
   base_url: https://sendogram.online
   auth_endpoint: /api/cms/auth
@@ -14,6 +14,7 @@ collections:
   - name: "blog"
     label: "Блог"
     folder: "content/blog"
+    extension: "mdx"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
