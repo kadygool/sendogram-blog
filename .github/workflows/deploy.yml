@@ -1,101 +1,53 @@
-name: Build and Deploy Blog
+name: Deploy Blog to Server
 
 on:
   push:
     branches: [main]
   pull_request:
+    types: [closed]
     branches: [main]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-          cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Build site
-        run: npm run build
-        env:
-          NODE_ENV: production
-      
-      - name: Run tests (if any)
-        run: npm test || echo "No tests configured"
-      
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: dist
-          path: dist/
-          retention-days: 7
-  
   deploy:
-    needs: build
+    # Запускаем только при пуше в main или при мерже PR
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
     
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      
-      - name: Download build artifacts
-        uses: actions/download-artifact@v3
+      - name: Deploy to server via SSH
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          name: dist
-          path: dist/
-      
-      - name: Build Docker image
-        run: docker build -t sendogram-blog:${{ github.sha }} .
-      
-      - name: Tag as latest
-        run: docker tag sendogram-blog:${{ github.sha }} sendogram-blog:latest
-      
-      # Option 1: Push to Docker Hub
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-      
-      - name: Push to Docker Hub
-        run: |
-          docker push sendogram-blog:${{ github.sha }}
-          docker push sendogram-blog:latest
-      
-      # Option 2: Deploy via SSH (uncomment if needed)
-      # - name: Deploy to server
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ secrets.SERVER_HOST }}
-      #     username: ${{ secrets.SERVER_USER }}
-      #     key: ${{ secrets.SERVER_SSH_KEY }}
-      #     script: |
-      #       cd /opt/sendogram-blog
-      #       docker-compose pull
-      #       docker-compose up -d
-      #       docker image prune -f
-
-  preview:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    
-    steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: dist
-          path: dist/
-      
-      - name: Deploy preview
-        run: echo "Preview deployment would go here"
-        # Можно использовать Netlify, Vercel или другой сервис для preview
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT || 22 }}
+          script: |
+            echo "🚀 Starting blog deployment..."
+            
+            # Перейти в папку блога
+            cd ~/aisender/sendogram-blog || exit 1
+            
+            # Подтянуть изменения из GitHub
+            echo "📥 Pulling latest changes from GitHub..."
+            git pull origin main
+            
+            # Вернуться в корень проекта
+            cd ~/aisender
+            
+            # Пересобрать образ блога
+            echo "🔨 Building Docker image..."
+            docker-compose -f docker-compose.blog.yml build blog
+            
+            # Перезапустить контейнер
+            echo "🔄 Restarting blog container..."
+            docker-compose -f docker-compose.blog.yml up -d blog
+            
+            # Очистить старые образы
+            echo "🧹 Cleaning up old images..."
+            docker image prune -f
+            
+            # Проверить статус
+            echo "✅ Deployment complete! Checking status..."
+            docker-compose -f docker-compose.blog.yml ps | grep blog
+            
+            echo "🎉 Blog deployed successfully!"
