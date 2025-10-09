@@ -14,7 +14,7 @@ collections:
   - name: "blog"
     label: "Блог"
     folder: "src/content/blog"
-    extension: "mdx"
+    extension: "md"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
